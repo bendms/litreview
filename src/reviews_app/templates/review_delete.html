@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+    <title>LITReview</title>
+    {% block extrahead%}
+    <link rel="stylesheet" href="{% static 'style_ticket_delete.css' %}">
+    {% endblock %}
+{% block content %}
+    <div id="ticket-delete-form">
+    <h2>Supprimer la Review</h2>
+    {% if form.errors %}
+        {{ form.errors }}
+    {% endif %}
+    <p>Êtes-vous sûr de vouloir supprimer cette review ?</p>
+    <div class="form">
+        <h3>{{ review.headline }}</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Supprimer">
+            <button type="button">
+                <a href="{% url 'home' %}">Retour</a>
+            </button>
+        </form>
+    </div>
+    </div>
+{% endblock content %}
+

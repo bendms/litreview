@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0E2439;
+    font-family: 'Roboto', sans-serif;
+    color : whitesmoke;
+}
+
+#navbar {
+    background-color : #20364D;
+    font-family : 'Roboto', sans-serif;
+    color : white;
+    text-align: left; 
+    justify-content: center;
+    padding: 20px;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    display: inline;
+    margin: 0 20px;
+}
+
+ul a {
+    text-decoration: none;
+    color: white;
+}
+
+h2 {
+    text-align: center; 
+}
+
+.form {
+display: flex; 
+align-items: center;
+justify-content: center;
+text-align: justify;
+width: auto
+}
+
+.form ul li {
+    display: block;
+}
+
+#ticket-creation-form {
+    display: block;
+    margin-top: 50px;
+    align-items: center;
+    justify-content: center;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+}
+
+#navbar a:hover {
+    text-decoration: underline;
+}
+

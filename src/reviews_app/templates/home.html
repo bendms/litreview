@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extrahead%}
+    <link rel="stylesheet" href="{% static 'style_home.css' %}">
+{% endblock %}
+{% block nav %}
+<div id='nav-right'>
+    <li><a href="{% url 'home' %}">Flux</a></li>
+    <li><a href="{% url 'posts' %}">Posts</a></li>
+    <li>Abonnements</li>
+    {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}">Déconnexion</a></li>
+    {% else %}
+        <li><a href="{% url 'login' %}">Connexion</a></li>
+    {% endif %}
+</div>
+{% endblock nav %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<div id='ticket_creation_buttons'>
+        <button class="btn">
+            <a href="{% url 'ticket_creation' %}">
+                Demander une critque
+            </a>
+        </button>
+        <button class="btn ">
+            <a href="{% url 'review_creation' %}">
+            Créer une critique
+            </a>
+        </button>
+</div>
+
+{% block ticket_list %}
+    <div id='ticket_list'>
+        {% for ticket in tickets %}
+            <div class='ticket'>
+                <div class='ticket_title'>
+                    <h2>{{ ticket.title }}</h2>
+                </div>
+                {% if ticket.image %}
+                <div class='ticket_image'>
+                    <img src="/{{ BASIC_DIR }}{{ticket.image}}" alt="image du ticket">
+                </div>
+                {% endif %}
+                <div class='ticket.description'>
+                    <p>{{ ticket.description }}</p>
+                </div>
+                <div class='ticket.user'>
+                    <p>{{ ticket.user }}</p>
+                </div>
+                <div class='ticket_date'>
+                    <p>{{ ticket.date }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock ticket_list %}
+{% endif %}
+{% endblock %}

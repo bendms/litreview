@@ -1,0 +1,26 @@
+{% load static %}
+<html>
+    <head>
+        <title>LITReview</title>
+        {% block extrahead %}
+            <link rel="stylesheet" href="{% static 'style.css' %}">
+        {% endblock %}
+    </head>
+    <body>
+        <ul id="navbar">
+            <li id="litreview"><a href="{% url 'home' %}">LITReview</a></li>
+            {% if user.is_authenticated %}
+                <li>Bienvenue {{ user.username }} !</li>
+            {% else %}
+                <li>Vous n'êtes pas connecté</li>
+            {% endif %}
+            {% block nav %}
+            {% endblock %}
+        </ul>            
+        {% block content %}
+        {% endblock content %}
+        {% comment %} {% if user.is_authenticated %}
+            <p>Vous êtes connecté en tant que {{ user.username }}.</p> <a href="{% url 'logout' %}">Déconnexion</a>
+        {% endif %} {% endcomment %}
+    </body>
+</html>

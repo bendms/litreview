@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+    <title>LITReview</title>
+    {% block extrahead%}
+    <link rel="stylesheet" href="{% static 'style_ticket_edit.css' %}">
+    {% endblock %}
+{% block content %}
+    <div id="ticket-edit-form">
+    <h2>Modifier votre ticket</h2>
+    {% if ticket.image %}
+    <div class='ticket_image'>
+        <img src="/{{ BASIC_DIR }}{{ticket.image}}" alt="image du ticket">
+    </div>
+    {% endif %}
+    {% if form.errors %}
+        {{ form.errors }}
+    {% endif %}
+    <div class="form">
+        <form method="post" action='{{ action_url }}' enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Envoyer">
+            <button type="button">
+                <a href="{% url 'posts' %}">Retour</a>
+            </button>
+        </form>
+    </div>
+    </div>
+{% endblock content %}

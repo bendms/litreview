@@ -1,0 +1,36 @@
+{% load static %}
+<html>
+    <head>
+        <title>LITReview</title>
+        <link rel="stylesheet" href="{% static 'style_login.css' %}">
+    </head>
+    <body>
+        <ul id="navbar">
+            <li id="litreview"><a href="{% url 'home' %}">LITReview</a></li>
+            <li id="login">Connexion</li>
+        </ul>            
+        {% block content %}{% endblock content %}
+            <div class="flex-container">
+                <div id="signup-container">
+                    <h2>Inscrivez-vous maintenant</h2>
+                    <button type="button">
+                        <a href="{% url 'signup' %}">
+                            S'inscrire
+                        </a>
+                    </button>
+                </div>
+                <div id="login-container">
+                    <h2>Connectez-vous</h2>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+                        <input type="password" name="password" placeholder="Mot de passe" required>
+                        <button type="submit">Se connecter</button>
+                    </form>
+                </div>
+            </div>
+        {% comment %} {% if user.is_authenticated %}
+            <p>Vous êtes connecté en tant que {{ user.username }}.</p> <a href="{% url 'logout' %}">Déconnexion</a>
+        {% endif %} {% endcomment %}
+    </body>
+</html>

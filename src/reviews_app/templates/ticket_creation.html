@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+    <title>LITReview</title>
+    {% block extrahead%}
+    <link rel="stylesheet" href="{% static 'style_ticket_creation.css' %}">
+    {% endblock %}
+{% block content %}
+    <div id="ticket-creation-form">
+    <h2>Créer un ticket</h2>
+    {% if form.errors %}
+        {{ form.errors }}
+    {% endif %}
+    <div class="form">
+        <form method="post" action='{{ action_url }}' enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Envoyer">
+            <button type="button">
+                <a href="{% url 'home' %}">Retour</a>
+            </button>
+        </form>
+    </div>
+    </div>
+{% endblock content %}

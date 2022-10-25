@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0E2439;
+    font-family: 'Roboto', sans-serif;
+    color : whitesmoke;
+}
+
+#navbar {
+    background-color : #20364D;
+    font-family : 'Roboto', sans-serif;
+    color : white;
+    text-align: left; 
+    justify-content: center;
+    padding: 20px;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    display: inline;
+    margin: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+#navbar a:hover {
+    text-decoration: underline;
+}
+
+#ticket_creation_buttons a {
+    color: black;
+}
+
+#litreview {
+    align-items: left;
+} 
+
+#nav-right {
+    float: right;
+}
+
+#ticket_creation_buttons {
+    margin-top: 45px;
+    text-align: center;
+    justify-content: center;
+}
+
+#ticket_list {
+    display: flex; 
+    flex-direction: column;
+    margin-top: 45px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.ticket {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #20364D;
+    color: white;
+    width: 450px;
+    display: inline-block;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
