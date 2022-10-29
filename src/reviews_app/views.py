@@ -1,8 +1,9 @@
-from audioop import reverse
 from urllib import request
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic, View
+
+from authentication.forms import FollowsUserForm
 from . import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -108,3 +109,19 @@ def review_delete(request, review_id):
         review.delete()
         return redirect('posts')
     return render(request, 'review_delete.html', {'review': review})
+
+@login_required(login_url=reverse_lazy('login'))
+def subscriptions(request):
+    user = CustomUser.objects.get(id=request.user.id)
+    users = CustomUser.objects.all()
+    if request.method == 'POST':
+        form = FollowsUserForm(request.POST)
+        
+        # request.user = CustomUser.objects.get(id=request.user.id)
+        if form.is_valid():
+            form.cleaned_data
+            follow_instance = form.save(commit=False)
+            follow_instance.user = request.user
+            follow_instance.save()
+            return redirect('home')
+    return render(request, 'subscriptions.html', {'user': user, 'users': users})

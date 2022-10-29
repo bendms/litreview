@@ -36,6 +36,7 @@ urlpatterns = [
     path('review/<int:review_id>/', reviews_app.views.review_edit, name="review_edit"),
     path('review/<int:review_id>/delete/', reviews_app.views.review_delete, name="review_delete"),
     path('ticket/<int:ticket_id>/delete/', reviews_app.views.ticket_delete, name="ticket_delete"),
+    path('subscriptions/', reviews_app.views.subscriptions, name="subscriptions"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
  

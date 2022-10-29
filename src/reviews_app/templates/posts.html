@@ -7,7 +7,7 @@
 <div id='nav-right'>
     <li><a href="{% url 'home' %}">Flux</a></li>
     <li>Posts</li>
-    <li>Abonnements</li>
+    <li><a href="{% url 'subscriptions' %}">Abonnements</a></li>
     {% if user.is_authenticated %}
         <li><a href="{% url 'logout' %}">Déconnexion</a></li>
     {% else %}

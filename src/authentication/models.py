@@ -36,4 +36,13 @@ class CustomUser(AbstractBaseUser):
         return True
     
 
-            
+class UserFollows(models.Model):
+    # Your UserFollows model definition goes here
+        # ensures we don't get multiple UserFollows instances
+        # for unique user-user_followed pairs
+    user = models.ForeignKey("CustomUser", related_name="following", on_delete=models.CASCADE)
+    followed_user = models.ForeignKey("CustomUser", related_name="followers", on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ('user', 'followed_user', )
+    def __str__(self):
+        return f"{self.user} suit {self.followed_user}"

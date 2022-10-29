@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extrahead%}
+    <link rel="stylesheet" href="{% static 'style_subscriptions.css' %}">
+{% endblock %}
+{% block nav %}
+<div id='nav-right'>
+    <li><a href="{% url 'home' %}">Flux</a></li>
+    <li><a href="{% url 'posts' %}">Posts</a></li>
+    <li><a href="{% url 'subscriptions' %}">Abonnements</a></li>
+    {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}">Déconnexion</a></li>
+    {% else %}
+        <li><a href="{% url 'login' %}">Connexion</a></li>
+    {% endif %}
+</div>
+{% endblock nav %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<div class="users_to_follow">
+    <h2>Utilisateurs à suivre</h2>
+    <ul>
+        {% for user in users %}
+            <li>
+                {{ user.username }}
+                <form method="POST">
+                    {% csrf_token %}
+                    <input class="follow_button" type="submit" value="Suivre">
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
