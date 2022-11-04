@@ -19,7 +19,7 @@
 {% block content %}
 {% if user.is_authenticated %}
 
-<div class="users_to_follow">
+{% comment %} <div class="users_to_follow">
     <h2>Utilisateurs à suivre</h2>
     <ul>
         {% for user in users %}
@@ -31,6 +31,42 @@
                 </form>
             </li>
         {% endfor %}
-    </ul>
+    </ul> {% endcomment %}
+    <h2>Suivre d'autres utilisateurs</h2>
+    <div id="following_form">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Envoyer">
+        </form>
+    </div>
+    <div id="following_list">
+        <div id="abonnements">
+            <h2>Abonnements</h2>
+            <ul>
+                {% for user in users_followed %}
+                    <li>
+                        <form method="POST">
+                            <div class="username_followed">
+                                {{ user.followed_user }}
+                            </div>
+                            {% csrf_token %}
+                            <button value={{ user.id }} name="unsub">Désabonner</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="abonnés">
+            <h2>Abonnés</h2>
+            <ul>
+                {% for user in users_who_follows %}
+                    <li>
+                        {{ user.user }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endif %}
 {% endblock %}

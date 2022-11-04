@@ -16,6 +16,6 @@ class LoginForm(forms.Form):
 class FollowsUserForm(forms.ModelForm):
     class Meta:
         model = UserFollows
-        fields = ['user', 'followed_user']
-        labels = {'ticket': 'Ticket', 'rating': 'Note', 'headline': 'Titre', 'body': 'Commentaire'}
+        fields = ['followed_user']
+        labels = {'followed_user': "Suivre d'autres utilisateurs"}
         

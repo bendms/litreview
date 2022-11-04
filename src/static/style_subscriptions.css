@@ -19,6 +19,7 @@ body {
 
 ul {
     list-style: none;
+    padding: 0;
 }
 
 ul li {
@@ -82,25 +83,25 @@ h2 {
     text-align: center;
 }
 
-.users_to_follow ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-}
-
-.users_to_follow li {
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 5px;
-    background-color: #20364D;
-    color: white;
-    width: 450px;
-    display: inline-block;
-}
-
-.follow_button {
+.unfollow_button {
     float: right;
+}
+
+#following_form {
+    text-align: center;
+}
+
+#following_list {
+    display: flex; 
+    justify-content: space-around;
+
+}
+
+#following_list ul li {
+    display: list-item
+}
+
+.username_followed {
+    width: 200px;
+    display: inline-block;
 }

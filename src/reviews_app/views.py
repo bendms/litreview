@@ -1,5 +1,5 @@
 from urllib import request
-from django.shortcuts import render
+from django.shortcuts import HttpResponse, render
 from django.urls import reverse_lazy
 from django.views import generic, View
 
@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from authentication.models import CustomUser
+from authentication.models import CustomUser, UserFollows
 from .models import Ticket, Review
 # Create your views here.
 
@@ -113,15 +113,21 @@ def review_delete(request, review_id):
 @login_required(login_url=reverse_lazy('login'))
 def subscriptions(request):
     user = CustomUser.objects.get(id=request.user.id)
-    users = CustomUser.objects.all()
+    # user_to_follow = CustomUser.objects.filter(id__in=UserFollows.objects.filter(follower=user))
+    # users_followed = UserFollows.objects.filter(user=user)
+    # users_to_follow = 
     if request.method == 'POST':
+        if 'unsub' in request.POST:
+            print("REQUEST.POST", request.POST)
+            print("REQUEST.POST['unsub'] = ", request.POST['unsub'])
+            UserFollows.objects.get(id=request.POST['unsub']).delete()
+            return redirect('subscriptions')
+        else:
+            user_to_follow = CustomUser.objects.get(id=request.POST['followed_user'])
+            UserFollows.objects.create(user=user, followed_user=user_to_follow)
+            return redirect('subscriptions')
+    else:
         form = FollowsUserForm(request.POST)
-        
-        # request.user = CustomUser.objects.get(id=request.user.id)
-        if form.is_valid():
-            form.cleaned_data
-            follow_instance = form.save(commit=False)
-            follow_instance.user = request.user
-            follow_instance.save()
-            return redirect('home')
-    return render(request, 'subscriptions.html', {'user': user, 'users': users})
+        users_followed = UserFollows.objects.filter(user_id=request.user.id)
+        users_who_follows = UserFollows.objects.filter(followed_user_id=request.user.id)
+        return render(request, 'subscriptions.html', {'form': form, 'users_followed': users_followed, 'users_who_follows': users_who_follows})
