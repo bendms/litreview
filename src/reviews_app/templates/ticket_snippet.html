@@ -1,0 +1,17 @@
+<div class='ticket_title'>
+    <h2>{{ post.title }}</h2>
+</div>
+{% if post.image %}
+    <div class='ticket_image'>
+        <img src="/{{ BASIC_DIR }}{{post.image}}" alt="image du ticket">
+    </div>
+{% endif %}
+<div class='ticket_description'>
+    <p>{{ post.description }}</p>
+</div>
+<div class='ticket_user'>
+    <p>{{ post.user }}</p>
+</div>
+<div class='ticket_date'>
+    <p>{{ post.date }}</p>
+</div>

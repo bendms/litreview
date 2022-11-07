@@ -32,7 +32,7 @@
         </button>
 </div>
 
-{% block ticket_list %}
+{% comment %} {% block ticket_list %}
     <div id='ticket_list'>
         {% for ticket in tickets %}
             <div class='ticket'>
@@ -56,6 +56,22 @@
             </div>
         {% endfor %}
     </div>
-{% endblock ticket_list %}
+{% endblock ticket_list %} {% endcomment %}
+
+{% block posts_list %}
+    <div id='posts_list'>
+        {% for post in posts %}
+            {% if post.content_type == 'TICKET' %}
+                <div class='ticket'>
+                    {% include 'ticket_snippet.html' %}
+                </div>
+            {% elif post.content_type == 'REVIEW' %}
+                <div class='review'>
+                    {% include 'review_snippet.html' %}
+                </div>
+            {% endif %}
+        {% endfor %}        
+    </div
+{% endblock %}
 {% endif %}
 {% endblock %}

@@ -2,6 +2,7 @@ from urllib import request
 from django.shortcuts import HttpResponse, render
 from django.urls import reverse_lazy
 from django.views import generic, View
+from django.db.models import CharField, Value
 
 from authentication.forms import FollowsUserForm
 from . import forms
@@ -11,20 +12,62 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from authentication.models import CustomUser, UserFollows
 from .models import Ticket, Review
+from itertools import chain
+
 # Create your views here.
+
+def get_users_viewable_reviews(request):
+    """Return a queryset of reviews that the user can view."""
+    users_followed = UserFollows.objects.filter(user_id=request.user.id).values("followed_user_id")
+    list_id = [id["followed_user_id"] for id in users_followed]
+    print("LIST_ID", list_id)
+    users_objects = CustomUser.objects.filter(id__in=list_id)
+    print("USERS_OBJECTS", users_objects)
+    reviews_users_followed = Review.objects.filter(user__in=users_objects)
+    print("=====REVIEWS_USER_FOLLOWED=====", reviews_users_followed)
+    return reviews_users_followed
+
+def get_users_viewable_tickets(request):
+    """Return a queryset of a tickets that the user can view"""
+    users_followed = UserFollows.objects.filter(user_id=request.user.id).values("followed_user_id")
+    list_id = [id["followed_user_id"] for id in users_followed]
+    users_objects = CustomUser.objects.filter(id__in=list_id)
+    tickets_users_followed = Ticket.objects.filter(user__in=users_objects)
+    print("TICKET_USERS_FOLLOWED", type(tickets_users_followed))
+    return tickets_users_followed
 
 @login_required(login_url=reverse_lazy('login'))
 def home(request):
+    """Home page view."""
     username = None
     if request.user.is_authenticated:
-        username = request.user.username
-        tickets = Ticket.objects.all()
-        return render(request, 'home.html', {'username': username, 'tickets': tickets})
+        # username = request.user.username
+        # tickets = Ticket.objects.all()
+        
+        
+        reviews = get_users_viewable_reviews(request)  
+        # returns queryset of reviews
+        reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
+
+        tickets = get_users_viewable_tickets(request) 
+        # returns queryset of tickets
+        tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
+
+        # combine and sort the two types of posts
+        posts = sorted(
+            chain(reviews, tickets),
+            key=lambda post: post.time_created, 
+            reverse=True
+        )
+        print("---------------------- POSTS ----------------------", type(posts))
+        return render(request, 'home.html', context={'posts': posts})
+        # return render(request, 'home.html', {'username': username, 'tickets': tickets})
     else:
         return render(request, 'home.html')
 
 @login_required(login_url=reverse_lazy('login'))
 def create_ticket(request):
+    """Create a new ticket."""
     if request.method == 'POST':
         form = forms.TicketForm(request.POST)
         # request.user = CustomUser.objects.get(id=request.user.id)
@@ -42,6 +85,7 @@ def create_ticket(request):
     
 @login_required(login_url=reverse_lazy('login'))
 def create_review(request):
+    """Create a new review."""
     if request.method == 'POST':
         form = forms.ReviewForm(request.POST)
         
@@ -59,6 +103,7 @@ def create_review(request):
     
 @login_required(login_url=reverse_lazy('login'))
 def posts_view(request):
+    """View all posts."""
     if request.user.is_authenticated:
         username = request.user.username
         reviews = Review.objects.filter(user=request.user)
@@ -71,6 +116,7 @@ def posts_view(request):
     
 @login_required(login_url=reverse_lazy('login'))
 def ticket_edit(request, ticket_id):
+    """Edit a ticket."""
     ticket = Ticket.objects.get(id=ticket_id)
     if request.method == 'POST':
         form = forms.TicketForm(request.POST, instance=ticket)
@@ -84,6 +130,7 @@ def ticket_edit(request, ticket_id):
     
 @login_required(login_url=reverse_lazy('login'))
 def review_edit(request, review_id):
+    """Edit a review."""
     review = Review.objects.get(id=review_id)
     if request.method == 'POST':
         form = forms.ReviewForm(request.POST, instance=review)
@@ -96,6 +143,7 @@ def review_edit(request, review_id):
 
 @login_required(login_url=reverse_lazy('login'))
 def ticket_delete(request, ticket_id):
+    """Delete a ticket."""
     ticket = Ticket.objects.get(id=ticket_id)
     if request.method == 'POST':
         ticket.delete()
@@ -104,6 +152,7 @@ def ticket_delete(request, ticket_id):
 
 @login_required(login_url=reverse_lazy('login'))
 def review_delete(request, review_id):
+    """Delete a review."""
     review = Review.objects.get(id=review_id)
     if request.method == 'POST':
         review.delete()
@@ -112,6 +161,7 @@ def review_delete(request, review_id):
 
 @login_required(login_url=reverse_lazy('login'))
 def subscriptions(request):
+    """View all subscriptions."""
     user = CustomUser.objects.get(id=request.user.id)
     # user_to_follow = CustomUser.objects.filter(id__in=UserFollows.objects.filter(follower=user))
     # users_followed = UserFollows.objects.filter(user=user)
@@ -129,5 +179,6 @@ def subscriptions(request):
     else:
         form = FollowsUserForm(request.POST)
         users_followed = UserFollows.objects.filter(user_id=request.user.id)
+        # users_followed = UserFollows.objects.all.exclude(user_id=request.user.id)
         users_who_follows = UserFollows.objects.filter(followed_user_id=request.user.id)
         return render(request, 'subscriptions.html', {'form': form, 'users_followed': users_followed, 'users_who_follows': users_who_follows})
