@@ -1,5 +1,5 @@
 from urllib import request
-from django.shortcuts import HttpResponse, render
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from django.urls import reverse_lazy
 from django.views import generic, View
 from django.db.models import CharField, Value
@@ -41,27 +41,19 @@ def home(request):
     """Home page view."""
     username = None
     if request.user.is_authenticated:
-        # username = request.user.username
-        # tickets = Ticket.objects.all()
-        
-        
         reviews = get_users_viewable_reviews(request)  
         # returns queryset of reviews
         reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
-
         tickets = get_users_viewable_tickets(request) 
         # returns queryset of tickets
         tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
-
         # combine and sort the two types of posts
         posts = sorted(
             chain(reviews, tickets),
             key=lambda post: post.time_created, 
             reverse=True
         )
-        print("---------------------- POSTS ----------------------", type(posts))
         return render(request, 'home.html', context={'posts': posts})
-        # return render(request, 'home.html', {'username': username, 'tickets': tickets})
     else:
         return render(request, 'home.html')
 
@@ -75,7 +67,7 @@ def create_ticket(request):
             form.cleaned_data
             ticket_instance = form.save(commit=False)
             ticket_instance.user = request.user
-            ticket_instance.image = request.FILES['image']
+            ticket_instance.image = request.FILES.get('image')
             ticket_instance.save()
             return redirect('home')
     else:
@@ -159,24 +151,36 @@ def review_delete(request, review_id):
         return redirect('posts')
     return render(request, 'review_delete.html', {'review': review})
 
+
 @login_required(login_url=reverse_lazy('login'))
 def subscriptions(request):
     """View all subscriptions."""
     user = CustomUser.objects.get(id=request.user.id)
-    # user_to_follow = CustomUser.objects.filter(id__in=UserFollows.objects.filter(follower=user))
-    # users_followed = UserFollows.objects.filter(user=user)
-    # users_to_follow = 
     if request.method == 'POST':
         if 'unsub' in request.POST:
-            print("REQUEST.POST", request.POST)
-            print("REQUEST.POST['unsub'] = ", request.POST['unsub'])
+            """Unsubscribe from a user."""
             UserFollows.objects.get(id=request.POST['unsub']).delete()
             return redirect('subscriptions')
+        elif 'followed_user' in request.POST:
+            """Get all users in the database. If the username is in the CustomUser table but not in the UserFollows table, add it to the UserFollows table."""
+            users_in_db = CustomUser.objects.all()
+            usernames = [user.username for user in users_in_db]
+            users_followed = UserFollows.objects.filter(user=user)
+            
+            print("USERS_FOLLOWED", users_followed)
+            if request.POST['followed_user'] in [user.followed_user.username for user in users_followed]:
+                return redirect('subscriptions')
+            elif request.POST['followed_user'] in usernames:
+                user_to_follow = CustomUser.objects.get(username=request.POST['followed_user'])
+                UserFollows.objects.create(user=user, followed_user=user_to_follow)
+                return redirect('subscriptions')    
+            else:
+                return redirect('subscriptions')
         else:
-            user_to_follow = CustomUser.objects.get(id=request.POST['followed_user'])
-            UserFollows.objects.create(user=user, followed_user=user_to_follow)
             return redirect('subscriptions')
+            
     else:
+        """Get users that the current user is following and users that are following the current user."""
         form = FollowsUserForm(request.POST)
         users_followed = UserFollows.objects.filter(user_id=request.user.id)
         # users_followed = UserFollows.objects.all.exclude(user_id=request.user.id)
