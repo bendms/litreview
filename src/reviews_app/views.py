@@ -20,6 +20,7 @@ def get_users_viewable_reviews(request):
     """Return a queryset of reviews that the user can view."""
     users_followed = UserFollows.objects.filter(user_id=request.user.id).values("followed_user_id")
     list_id = [id["followed_user_id"] for id in users_followed]
+    list_id.append(request.user.id)
     print("LIST_ID", list_id)
     users_objects = CustomUser.objects.filter(id__in=list_id)
     print("USERS_OBJECTS", users_objects)
@@ -31,6 +32,7 @@ def get_users_viewable_tickets(request):
     """Return a queryset of a tickets that the user can view"""
     users_followed = UserFollows.objects.filter(user_id=request.user.id).values("followed_user_id")
     list_id = [id["followed_user_id"] for id in users_followed]
+    list_id.append(request.user.id)
     users_objects = CustomUser.objects.filter(id__in=list_id)
     tickets_users_followed = Ticket.objects.filter(user__in=users_objects)
     print("TICKET_USERS_FOLLOWED", type(tickets_users_followed))
@@ -74,6 +76,31 @@ def create_ticket(request):
         form = forms.TicketForm()
         request.user = CustomUser.objects.get(id=request.user.id)
         return render(request, 'ticket_creation.html', {'form': form})
+    
+@login_required(login_url=reverse_lazy('login'))
+def create_review_not_in_response_to_a_ticket(request):
+    if request.method == 'POST':
+        form_ticket = forms.TicketForm(request.POST)
+        print("FORM_TICKET", form_ticket)
+        form_review = forms.ReviewForm(request.POST) #TODO: Passer le ticket de la requête POST en paramètre ici
+        print("FORM_REVIEW", form_review)
+        if form_review.is_valid() and form_ticket.is_valid():
+            form_review.cleaned_data
+            form_ticket.cleaned_data
+            review_instance = form_review.save(commit=False)
+            ticket_instance = form_ticket.save(commit=False)
+            review_instance.user = request.user
+            ticket_instance.user = request.user
+            ticket_instance.save()
+            review_instance.ticket = ticket_instance
+            review_instance.save()
+            return redirect('home')
+    else:
+        ticket_form = forms.TicketForm()
+        review_form = forms.ReviewForm()
+        review_form.ticket = ticket_form
+        return render(request, 'review_creation_not_in_response_to_a_ticket.html', {'ticket_form': ticket_form, 'review_form': review_form})
+            
     
 @login_required(login_url=reverse_lazy('login'))
 def create_review(request):
@@ -168,7 +195,7 @@ def subscriptions(request):
             users_followed = UserFollows.objects.filter(user=user)
             
             print("USERS_FOLLOWED", users_followed)
-            if request.POST['followed_user'] in [user.followed_user.username for user in users_followed]:
+            if request.POST['followed_user'] in [user.followed_user.username for user in users_followed] or request.POST['followed_user'] == user.username:
                 return redirect('subscriptions')
             elif request.POST['followed_user'] in usernames:
                 user_to_follow = CustomUser.objects.get(username=request.POST['followed_user'])

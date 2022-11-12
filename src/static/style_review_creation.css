@@ -54,6 +54,13 @@ width: auto
     justify-content: center;
 }
 
+#ticket-creation-form {
+    display: block;
+    margin-top: 50px;
+    align-items: center;
+    justify-content: center;
+}
+
 a {
     text-decoration: none;
     color: rgb(0, 0, 0);

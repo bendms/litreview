@@ -6,19 +6,19 @@
     {% endblock %}
 {% block content %}
     <div id="review-creation-form">
-    <h2>Créer une Review</h2>
-    {% if form.errors %}
-        {{ form.errors }}
-    {% endif %}
-    <div class="form">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Envoyer">
-            <button type="button">
-                <a href="{% url 'home' %}">Retour</a>
-            </button>
-        </form>
-    </div>
+        <h2>Créer une Review</h2>
+        {% if form.errors %}
+            {{ form.errors }}
+        {% endif %}
+        <div class="form">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Envoyer">
+                <button type="button">
+                    <a href="{% url 'home' %}">Retour</a>
+                </button>
+            </form>
+        </div>
     </div>
 {% endblock content %}

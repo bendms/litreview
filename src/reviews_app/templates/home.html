@@ -26,7 +26,8 @@
             </a>
         </button>
         <button class="btn ">
-            <a href="{% url 'review_creation' %}">
+            {% comment %} <a href="{% url 'review_creation' %}"> {% endcomment %}
+            <a href="{% url 'review_creation_not_in_response_to_a_ticket' %}">
             Créer une critique
             </a>
         </button>
@@ -64,6 +65,11 @@
             {% if post.content_type == 'TICKET' %}
                 <div class='ticket'>
                     {% include 'ticket_snippet.html' %}
+                    <button class="btn">
+                        <a href="{% url 'review_creation' %}">
+                            Créer une critique
+                        </a>
+                    </button>
                 </div>
             {% elif post.content_type == 'REVIEW' %}
                 <div class='review'>
