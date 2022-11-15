@@ -5,6 +5,30 @@
     <link rel="stylesheet" href="{% static 'style_review_creation.css' %}">
     {% endblock %}
 {% block content %}
+<div id="ticket_and_review_form">
+    <h3>Vous êtes en train de poster en réponse à</h3>
+    <div>
+        <div id="ticket_instance">
+            <div class='ticket_title'>
+                <h2>{{ ticket_instance.title }}</h2>
+            </div>
+            {% if ticket_instance.image %}
+                <div class='ticket_image'>
+                    <img src="/{{ BASIC_DIR }}{{ticket_instance.image}}" alt="image du ticket">
+                </div>
+            {% endif %}
+            <div class='ticket_description'>
+                <p>{{ ticket_instance.description }}</p>
+            </div>
+            <div class='ticket_user'>
+                <p>{{ ticket_instance.user }}</p>
+            </div>
+            <div class='ticket_date'>
+                <p>{{ ticket_instance.date }}</p>
+            </div>
+        </div>
+    </div>
+
     <div id="review-creation-form">
         <h2>Créer une Review</h2>
         {% if form.errors %}
@@ -13,7 +37,7 @@
         <div class="form">
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ review_form.as_p }}
                 <input type="submit" value="Envoyer">
                 <button type="button">
                     <a href="{% url 'home' %}">Retour</a>
@@ -21,4 +45,5 @@
             </form>
         </div>
     </div>
+</div>
 {% endblock content %}

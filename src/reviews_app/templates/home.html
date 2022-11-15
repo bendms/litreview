@@ -65,11 +65,6 @@
             {% if post.content_type == 'TICKET' %}
                 <div class='ticket'>
                     {% include 'ticket_snippet.html' %}
-                    <button class="btn">
-                        <a href="{% url 'review_creation' %}">
-                            Créer une critique
-                        </a>
-                    </button>
                 </div>
             {% elif post.content_type == 'REVIEW' %}
                 <div class='review'>

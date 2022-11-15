@@ -1,20 +1,46 @@
+{% if post.user_id == request.user.id %}
+<div class='review_user'>
+    <span>Vous avez publié une critique</span>
+</div>
+{% else %}
+<div class='review_user'>
+<span>{{ post.user }} a posté une critique</span>
+</div>
+{% endif %}
 <div class='review.headline'>
-    <h2>{{ post.headline }}</h2>
+    <h2>{{ post.headline }} - 
+    {% if post.rating == 1 %}
+    &#9733</h2>
+</div>
+    {% elif post.rating == 2 %}
+    &#9733&#9733</h2>
+</div>
+    {% elif post.rating == 3 %}
+    &#9733&#9733&#9733</h2>
+</div>
+    {% elif post.rating == 4 %}
+    &#9733&#9733&#9733&#9733</h2>
+</div>
+    {% elif post.rating == 5 %}
+    &#9733&#9733&#9733&#9733&#9733</h2>
+</div>
+    {% endif %}
+<div class='review_time_created'>
+    {{ post.time_created }}
 </div>
 <div class='review_body'>
     {{ post.body|truncatechars:200 }}
 </div>
-<div class='review_user'>
-    {{ post.user }}
-</div>
-<div class='review_time_created'>
-    {{ post.time_created }}
-</div>
 <div class='ticket_related'>
+    <h3>Ticket - {{ post.user }}</h3>
     {{ post.ticket }}
     {% if post.ticket.image %}
     <div class='image_ticket_related'>
         <img src="/{{ BASIC_DIR }}{{post.ticket.image}}" alt="image du ticket">
+    </div>
+    {% else %}
+    <div class='image_ticket_related'>
+        <img src="{{ BASIC_DIR }}/images/default_image.jpeg" alt="image du ticket">
     </div>
     {% endif %}
 </div>

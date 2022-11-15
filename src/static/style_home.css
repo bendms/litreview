@@ -88,11 +88,13 @@ a {
 img {
     max-width: 100%;
     max-height: 100%;
+    margin-bottom: 10px;
+    border-radius: 5px;
 }
 
 .ticket_related {
     border: #0E2439 1px solid;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 .ticket_related {

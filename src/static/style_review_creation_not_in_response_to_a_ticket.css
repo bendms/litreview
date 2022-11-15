@@ -47,14 +47,15 @@ width: auto
     display: block;
 }
 
-#review-creation-form {
-    display: block;
-    margin-top: 50px;
-    align-items: center;
+#review-form {
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
     justify-content: center;
+    align-items: center;
 }
 
-#ticket-creation-form {
+#review-creation-form {
     display: block;
     margin-top: 50px;
     align-items: center;
@@ -85,13 +86,4 @@ a {
 img {
     max-width: 100%;
     max-height: 100%;
-}
-
-#ticket_and_review_form {
-    display: flex; 
-    flex-direction: column;
-    margin-top: 45px;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
 }

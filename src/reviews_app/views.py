@@ -5,6 +5,7 @@ from django.views import generic, View
 from django.db.models import CharField, Value
 
 from authentication.forms import FollowsUserForm
+from litreview.settings import MEDIA_ROOT
 from . import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -79,21 +80,46 @@ def create_ticket(request):
     
 @login_required(login_url=reverse_lazy('login'))
 def create_review_not_in_response_to_a_ticket(request):
+    user = request.user
     if request.method == 'POST':
         form_ticket = forms.TicketForm(request.POST)
-        print("FORM_TICKET", form_ticket)
+        # print("FORM_TICKET", form_ticket)
         form_review = forms.ReviewForm(request.POST) #TODO: Passer le ticket de la requête POST en paramètre ici
-        print("FORM_REVIEW", form_review)
+        # print("FORM_REVIEW", form_review)
+        # print("FORM_REVIEW_IS_VALID", form_review.is_valid())
+        # print("TICKET_REVIEW_IS_VALID", form_ticket.is_valid())
+        
         if form_review.is_valid() and form_ticket.is_valid():
             form_review.cleaned_data
             form_ticket.cleaned_data
-            review_instance = form_review.save(commit=False)
-            ticket_instance = form_ticket.save(commit=False)
-            review_instance.user = request.user
-            ticket_instance.user = request.user
+            # print(request.user)
+            # print(type(request.user))
+            # print("FORM_REVIEW_CLEANED_DATA", form_review.cleaned_data)
+            ticket_instance, created = Ticket.objects.get_or_create(
+                title = form_ticket.cleaned_data["title"], 
+                description = form_ticket.cleaned_data["description"],
+                image = form_ticket.cleaned_data["image"],
+                user = user
+            )
+            ticket_instance.has_review = True
+            # print("==================TICKET_INSTANCE_IMAGE===============", ticket_instance.image)
+            # if not ticket_instance.image:
+            #     ticket_instance.image = MEDIA_ROOT + "/images/default_image.jpeg"
+            #TODO : telecharger un png dans les statics appelé en cas d'image = None
+            # image = form_ticket.cleaned_data["image"] or default_image => (static/...)
+            # ticket_instance = form_ticket.save()
             ticket_instance.save()
-            review_instance.ticket = ticket_instance
+            
+            review_instance = Review(
+                ticket = ticket_instance,
+                rating = form_review.cleaned_data["rating"],
+                headline = form_review.cleaned_data["headline"],
+                body = form_review.cleaned_data["body"],
+                user = user
+            )
+            # review_instance = form_review.save()
             review_instance.save()
+            print("REVIEW_INSTANCE", review_instance)
             return redirect('home')
     else:
         ticket_form = forms.TicketForm()
@@ -103,22 +129,62 @@ def create_review_not_in_response_to_a_ticket(request):
             
     
 @login_required(login_url=reverse_lazy('login'))
-def create_review(request):
+def create_review(request, ticket_id):
     """Create a new review."""
-    if request.method == 'POST':
-        form = forms.ReviewForm(request.POST)
+    # if request.method == 'POST':
+    #     form = forms.ReviewForm(request.POST)
         
-        # request.user = CustomUser.objects.get(id=request.user.id)
-        if form.is_valid():
-            form.cleaned_data
-            review_instance = form.save(commit=False)
-            review_instance.user = request.user
+    #     # request.user = CustomUser.objects.get(id=request.user.id)
+    #     if form.is_valid():
+    #         form.cleaned_data
+    #         review_instance = form.save(commit=False)
+    #         review_instance.user = request.user
+    #         review_instance.save()
+    #         return redirect('home')
+    # else:
+    #     form = forms.ReviewForm()
+    #     request.user = CustomUser.objects.get(id=request.user.id)
+    #     return render(request, 'review_creation.html', {'form': form})
+    ticket_instance = Ticket.objects.get(id=ticket_id)
+    user = request.user
+    if request.method == 'POST':
+        # print("FORM_TICKET", form_ticket)
+        form_review = forms.ReviewForm(request.POST) #TODO: Passer le ticket de la requête POST en paramètre ici
+        # print("FORM_REVIEW", form_review)
+        # print("FORM_REVIEW_IS_VALID", form_review.is_valid())
+        # print("TICKET_REVIEW_IS_VALID", form_ticket.is_valid())
+        
+        if form_review.is_valid():
+            form_review.cleaned_data
+            # print(request.user)
+            # print(type(request.user))
+            # print("FORM_REVIEW_CLEANED_DATA", form_review.cleaned_data)
+
+            #TODO : telecharger un png dans les statics appelé en cas d'image = None
+            # image = form_ticket.cleaned_data["image"] or default_image => (static/...)
+            # ticket_instance = form_ticket.save()
+
+            
+            review_instance = Review(
+                ticket = ticket_instance,
+                rating = form_review.cleaned_data["rating"],
+                headline = form_review.cleaned_data["headline"],
+                body = form_review.cleaned_data["body"],
+                user = user
+            )
+            # review_instance = form_review.save()
             review_instance.save()
+            ticket_instance.has_review = True
+            ticket_instance.save()
+            print("REVIEW_INSTANCE", review_instance)
             return redirect('home')
     else:
-        form = forms.ReviewForm()
-        request.user = CustomUser.objects.get(id=request.user.id)
-        return render(request, 'review_creation.html', {'form': form})
+        print("========= REQUEST ========", request.GET)
+        ticket_instance = Ticket.objects.get(id=ticket_id)
+        review_form = forms.ReviewForm()
+        review_form.ticket = ticket_instance
+        return render(request, 'review_creation.html', {'ticket_instance': ticket_instance, 'review_form': review_form})
+
     
 @login_required(login_url=reverse_lazy('login'))
 def posts_view(request):
@@ -174,6 +240,10 @@ def review_delete(request, review_id):
     """Delete a review."""
     review = Review.objects.get(id=review_id)
     if request.method == 'POST':
+        related_ticket_id = review.ticket_id
+        related_ticket = Ticket.objects.get(id=related_ticket_id)
+        related_ticket.has_review = False
+        related_ticket.save()
         review.delete()
         return redirect('posts')
     return render(request, 'review_delete.html', {'review': review})

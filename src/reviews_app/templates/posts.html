@@ -24,23 +24,40 @@
         {% for review in reviews %}
             <div class='review'>
                 <h2>Vous avez publié une critique</h2>
-                <div class='review.headline'>
-                    <h2>{{ review.headline }}</h2>
-                </div>
-                <div class='review_body'>
-                    {{ review.body|truncatechars:200 }}
-                </div>
-                <div class='review_user'>
-                    {{ review.user }}
-                </div>
                 <div class='review_time_created'>
                     {{ review.time_created }}
                 </div>
+                <div class='review.headline'>
+                    <h2>{{ review.headline }} - 
+                        {% if review.rating == 1 %}
+                        &#9733</h2>
+                    </div>
+                        {% elif review.rating == 2 %}
+                        &#9733&#9733</h2>
+                    </div>
+                        {% elif review.rating == 3 %}
+                        &#9733&#9733&#9733</h2>
+                    </div>
+                        {% elif review.rating == 4 %}
+                        &#9733&#9733&#9733&#9733</h2>
+                    </div>
+                        {% elif review.rating == 5 %}
+                        &#9733&#9733&#9733&#9733&#9733</h2>
+                    </div>
+                        {% endif %}
+                <div class='review_body'>
+                    {{ review.body|truncatechars:200 }}
+                </div>
                 <div class='ticket_related'>
+                    <h3>Ticket - {{ review.ticket.user }}</h3>
                     {{ review.ticket }}
                     {% if review.ticket.image %}
                     <div class='image_ticket_related'>
                         <img src="{{ review.ticket.image.url }}" alt="image du ticket">
+                    </div>
+                    {% else %}
+                    <div class='image_ticket_related'>
+                        <img src="{{ BASIC_DIR }}/images/default_image.jpeg" alt="image du ticket">
                     </div>
                     {% endif %}
                 </div>
@@ -60,23 +77,24 @@
         {% for ticket in tickets %}
             <div class='ticket'>
                 <h2>Vous avez publié un ticket</h2>
+                <div class='ticket_time_created'>
+                    {{ ticket.time_created }}
+                </div>
                 <div class='ticket_title'>
                     <h2>{{ ticket.title }}</h2>
+                </div>
+                <div class='ticket_description'>
+                    {{ ticket.description|truncatechars:200 }}
                 </div>
                 {% if ticket.image %}
                 <div class='ticket_image'>
                     <img src="/{{ BASIC_DIR }}{{ticket.image}}" alt="image du ticket">
                 </div>
+                {% else %}
+                <div class='ticket_image'>
+                    <img src="{{ BASIC_DIR }}/images/default_image.jpeg" alt="image du ticket">
+                </div>
                 {% endif %}
-                <div class='ticket_description'>
-                    {{ ticket.description|truncatechars:200 }}
-                </div>
-                <div class='ticket.user'>
-                    {{ ticket.user }}
-                </div>
-                <div class='ticket_time_created'>
-                    {{ ticket.time_created }}
-                </div>
                 <button class='ticket_edit_button'>
                     <a href="{% url 'ticket_edit' ticket.id %}">Modifier</a>
                 </button>

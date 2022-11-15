@@ -30,7 +30,7 @@ urlpatterns = [
     # path('signup/', authentication.views.signup_page, name="signup"),
     path("signup/", authentication.views.SignUpView.as_view(), name="signup"),
     path("ticket_creation/", reviews_app.views.create_ticket, name="ticket_creation"),
-    path('review_creation/', reviews_app.views.create_review, name="review_creation"),
+    path('review_creation/<int:ticket_id>/', reviews_app.views.create_review, name="review_creation"),
     path('review_creation_not_in_response_to_a_ticket/', reviews_app.views.create_review_not_in_response_to_a_ticket, name="review_creation_not_in_response_to_a_ticket"),
     path('posts/', reviews_app.views.posts_view, name="posts"),
     path('ticket/<int:ticket_id>/', reviews_app.views.ticket_edit, name="ticket_edit"),
@@ -38,6 +38,9 @@ urlpatterns = [
     path('review/<int:review_id>/delete/', reviews_app.views.review_delete, name="review_delete"),
     path('ticket/<int:ticket_id>/delete/', reviews_app.views.ticket_delete, name="ticket_delete"),
     path('subscriptions/', reviews_app.views.subscriptions, name="subscriptions"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
  

@@ -1,17 +1,35 @@
+{% if post.user_id == request.user.id %}
+<div class='ticket_user'>
+    <span>Vous avez demandé une critique</span>
+</div>
+{% else %}
+<div class='ticket_user'>
+<span>{{ post.user }} a demandé une critique</span>
+</div>
+{% endif %}
+<div class='ticket_time_created'>
+    <p>{{ post.time_created }}</p>
+</div>
 <div class='ticket_title'>
     <h2>{{ post.title }}</h2>
+</div>
+<div class='ticket_description'>
+    <p>{{ post.description }}</p>
 </div>
 {% if post.image %}
     <div class='ticket_image'>
         <img src="/{{ BASIC_DIR }}{{post.image}}" alt="image du ticket">
     </div>
+{% else %}
+<div class='ticket_image'>
+    <img src="{{ BASIC_DIR }}/images/default_image.jpeg" alt="image du ticket">
+</div>
 {% endif %}
-<div class='ticket_description'>
-    <p>{{ post.description }}</p>
-</div>
-<div class='ticket_user'>
-    <p>{{ post.user }}</p>
-</div>
-<div class='ticket_date'>
-    <p>{{ post.date }}</p>
-</div>
+{% if post.has_review %}
+{% else %}
+    <button class="btn">
+        <a id={{ post.id }} href="{% url 'review_creation' post.id %}">
+            Créer une critique
+        </a>
+    </button>
+{% endif %}

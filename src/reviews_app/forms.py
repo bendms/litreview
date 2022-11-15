@@ -8,11 +8,18 @@ class TicketForm(forms.ModelForm):
         fields = ['title', 'description', 'image']
         labels = {'title': 'Titre', 'description': 'Description', 'image': 'Image'}
         
+# class ReviewForm(forms.ModelForm):
+#     class Meta:
+#         model = Review
+#         fields = ['ticket', 'rating', 'headline', 'body']
+#         labels = {'ticket': 'Ticket', 'rating': 'Note', 'headline': 'Titre', 'body': 'Commentaire'}
+#         widgets = {'rating': forms.RadioSelect(choices=[(1, '- 1'), (2, '- 2'), (3, '- 3'), (4, '- 4'), (5, '- 5')])}
+        
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['ticket', 'rating', 'headline', 'body']
-        labels = {'ticket': 'Ticket', 'rating': 'Note', 'headline': 'Titre', 'body': 'Commentaire'}
+        fields = ['rating', 'headline', 'body']
+        labels = {'rating': 'Note', 'headline': 'Titre', 'body': 'Commentaire'}
         widgets = {'rating': forms.RadioSelect(choices=[(1, '- 1'), (2, '- 2'), (3, '- 3'), (4, '- 4'), (5, '- 5')])}
         
 
