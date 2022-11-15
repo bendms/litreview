@@ -24,10 +24,8 @@ from django.conf import settings
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', reviews_app.views.home, name="home"),
-    # path("login/", authentication.views.login, name="login"),
     path("login/", authentication.views.LoginView.as_view(), name="login"),
     path('logout/', authentication.views.logout, name="logout"),
-    # path('signup/', authentication.views.signup_page, name="signup"),
     path("signup/", authentication.views.SignUpView.as_view(), name="signup"),
     path("ticket_creation/", reviews_app.views.create_ticket, name="ticket_creation"),
     path('review_creation/<int:ticket_id>/', reviews_app.views.create_review, name="review_creation"),

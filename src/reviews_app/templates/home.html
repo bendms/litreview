@@ -26,38 +26,11 @@
             </a>
         </button>
         <button class="btn ">
-            {% comment %} <a href="{% url 'review_creation' %}"> {% endcomment %}
             <a href="{% url 'review_creation_not_in_response_to_a_ticket' %}">
             Créer une critique
             </a>
         </button>
 </div>
-
-{% comment %} {% block ticket_list %}
-    <div id='ticket_list'>
-        {% for ticket in tickets %}
-            <div class='ticket'>
-                <div class='ticket_title'>
-                    <h2>{{ ticket.title }}</h2>
-                </div>
-                {% if ticket.image %}
-                <div class='ticket_image'>
-                    <img src="/{{ BASIC_DIR }}{{ticket.image}}" alt="image du ticket">
-                </div>
-                {% endif %}
-                <div class='ticket.description'>
-                    <p>{{ ticket.description }}</p>
-                </div>
-                <div class='ticket.user'>
-                    <p>{{ ticket.user }}</p>
-                </div>
-                <div class='ticket_date'>
-                    <p>{{ ticket.date }}</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock ticket_list %} {% endcomment %}
 
 {% block posts_list %}
     <div id='posts_list'>

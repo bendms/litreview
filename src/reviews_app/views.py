@@ -1,13 +1,10 @@
-from urllib import request
-from django.shortcuts import HttpResponse, HttpResponseRedirect, render
+from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views import generic, View
 from django.db.models import CharField, Value
 
 from authentication.forms import FollowsUserForm
 from litreview.settings import MEDIA_ROOT
 from . import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
@@ -22,11 +19,8 @@ def get_users_viewable_reviews(request):
     users_followed = UserFollows.objects.filter(user_id=request.user.id).values("followed_user_id")
     list_id = [id["followed_user_id"] for id in users_followed]
     list_id.append(request.user.id)
-    print("LIST_ID", list_id)
     users_objects = CustomUser.objects.filter(id__in=list_id)
-    print("USERS_OBJECTS", users_objects)
     reviews_users_followed = Review.objects.filter(user__in=users_objects)
-    print("=====REVIEWS_USER_FOLLOWED=====", reviews_users_followed)
     return reviews_users_followed
 
 def get_users_viewable_tickets(request):
@@ -36,7 +30,6 @@ def get_users_viewable_tickets(request):
     list_id.append(request.user.id)
     users_objects = CustomUser.objects.filter(id__in=list_id)
     tickets_users_followed = Ticket.objects.filter(user__in=users_objects)
-    print("TICKET_USERS_FOLLOWED", type(tickets_users_followed))
     return tickets_users_followed
 
 @login_required(login_url=reverse_lazy('login'))
@@ -65,7 +58,6 @@ def create_ticket(request):
     """Create a new ticket."""
     if request.method == 'POST':
         form = forms.TicketForm(request.POST)
-        # request.user = CustomUser.objects.get(id=request.user.id)
         if form.is_valid():
             form.cleaned_data
             ticket_instance = form.save(commit=False)
@@ -80,21 +72,14 @@ def create_ticket(request):
     
 @login_required(login_url=reverse_lazy('login'))
 def create_review_not_in_response_to_a_ticket(request):
+    """Create ticket form and review form at the same time and link ticket to review object."""
     user = request.user
     if request.method == 'POST':
         form_ticket = forms.TicketForm(request.POST)
-        # print("FORM_TICKET", form_ticket)
         form_review = forms.ReviewForm(request.POST) #TODO: Passer le ticket de la requête POST en paramètre ici
-        # print("FORM_REVIEW", form_review)
-        # print("FORM_REVIEW_IS_VALID", form_review.is_valid())
-        # print("TICKET_REVIEW_IS_VALID", form_ticket.is_valid())
-        
         if form_review.is_valid() and form_ticket.is_valid():
             form_review.cleaned_data
             form_ticket.cleaned_data
-            # print(request.user)
-            # print(type(request.user))
-            # print("FORM_REVIEW_CLEANED_DATA", form_review.cleaned_data)
             ticket_instance, created = Ticket.objects.get_or_create(
                 title = form_ticket.cleaned_data["title"], 
                 description = form_ticket.cleaned_data["description"],
@@ -102,12 +87,6 @@ def create_review_not_in_response_to_a_ticket(request):
                 user = user
             )
             ticket_instance.has_review = True
-            # print("==================TICKET_INSTANCE_IMAGE===============", ticket_instance.image)
-            # if not ticket_instance.image:
-            #     ticket_instance.image = MEDIA_ROOT + "/images/default_image.jpeg"
-            #TODO : telecharger un png dans les statics appelé en cas d'image = None
-            # image = form_ticket.cleaned_data["image"] or default_image => (static/...)
-            # ticket_instance = form_ticket.save()
             ticket_instance.save()
             
             review_instance = Review(
@@ -117,9 +96,7 @@ def create_review_not_in_response_to_a_ticket(request):
                 body = form_review.cleaned_data["body"],
                 user = user
             )
-            # review_instance = form_review.save()
             review_instance.save()
-            print("REVIEW_INSTANCE", review_instance)
             return redirect('home')
     else:
         ticket_form = forms.TicketForm()
@@ -131,40 +108,12 @@ def create_review_not_in_response_to_a_ticket(request):
 @login_required(login_url=reverse_lazy('login'))
 def create_review(request, ticket_id):
     """Create a new review."""
-    # if request.method == 'POST':
-    #     form = forms.ReviewForm(request.POST)
-        
-    #     # request.user = CustomUser.objects.get(id=request.user.id)
-    #     if form.is_valid():
-    #         form.cleaned_data
-    #         review_instance = form.save(commit=False)
-    #         review_instance.user = request.user
-    #         review_instance.save()
-    #         return redirect('home')
-    # else:
-    #     form = forms.ReviewForm()
-    #     request.user = CustomUser.objects.get(id=request.user.id)
-    #     return render(request, 'review_creation.html', {'form': form})
     ticket_instance = Ticket.objects.get(id=ticket_id)
     user = request.user
     if request.method == 'POST':
-        # print("FORM_TICKET", form_ticket)
-        form_review = forms.ReviewForm(request.POST) #TODO: Passer le ticket de la requête POST en paramètre ici
-        # print("FORM_REVIEW", form_review)
-        # print("FORM_REVIEW_IS_VALID", form_review.is_valid())
-        # print("TICKET_REVIEW_IS_VALID", form_ticket.is_valid())
-        
+        form_review = forms.ReviewForm(request.POST)
         if form_review.is_valid():
             form_review.cleaned_data
-            # print(request.user)
-            # print(type(request.user))
-            # print("FORM_REVIEW_CLEANED_DATA", form_review.cleaned_data)
-
-            #TODO : telecharger un png dans les statics appelé en cas d'image = None
-            # image = form_ticket.cleaned_data["image"] or default_image => (static/...)
-            # ticket_instance = form_ticket.save()
-
-            
             review_instance = Review(
                 ticket = ticket_instance,
                 rating = form_review.cleaned_data["rating"],
@@ -172,14 +121,11 @@ def create_review(request, ticket_id):
                 body = form_review.cleaned_data["body"],
                 user = user
             )
-            # review_instance = form_review.save()
             review_instance.save()
             ticket_instance.has_review = True
             ticket_instance.save()
-            print("REVIEW_INSTANCE", review_instance)
             return redirect('home')
     else:
-        print("========= REQUEST ========", request.GET)
         ticket_instance = Ticket.objects.get(id=ticket_id)
         review_form = forms.ReviewForm()
         review_form.ticket = ticket_instance
@@ -193,8 +139,6 @@ def posts_view(request):
         username = request.user.username
         reviews = Review.objects.filter(user=request.user)
         tickets = Ticket.objects.filter(user=request.user)
-        print(reviews)
-        print(tickets)
         return render (request, 'posts.html', {'username': username, 'reviews': reviews, 'tickets': tickets})
     else:
         return render(request, 'home.html')
@@ -237,7 +181,7 @@ def ticket_delete(request, ticket_id):
 
 @login_required(login_url=reverse_lazy('login'))
 def review_delete(request, review_id):
-    """Delete a review."""
+    """Delete a review and change has_review to False for related_ticket"""
     review = Review.objects.get(id=review_id)
     if request.method == 'POST':
         related_ticket_id = review.ticket_id
@@ -263,8 +207,6 @@ def subscriptions(request):
             users_in_db = CustomUser.objects.all()
             usernames = [user.username for user in users_in_db]
             users_followed = UserFollows.objects.filter(user=user)
-            
-            print("USERS_FOLLOWED", users_followed)
             if request.POST['followed_user'] in [user.followed_user.username for user in users_followed] or request.POST['followed_user'] == user.username:
                 return redirect('subscriptions')
             elif request.POST['followed_user'] in usernames:
@@ -280,6 +222,5 @@ def subscriptions(request):
         """Get users that the current user is following and users that are following the current user."""
         form = FollowsUserForm(request.POST)
         users_followed = UserFollows.objects.filter(user_id=request.user.id)
-        # users_followed = UserFollows.objects.all.exclude(user_id=request.user.id)
         users_who_follows = UserFollows.objects.filter(followed_user_id=request.user.id)
         return render(request, 'subscriptions.html', {'form': form, 'users_followed': users_followed, 'users_who_follows': users_who_follows})

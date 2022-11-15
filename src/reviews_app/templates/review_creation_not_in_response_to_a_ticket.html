@@ -9,26 +9,13 @@
         <h2>Créer une Review (pas en réponse à un ticket)</h2>
         <div class="form">
             <form method="post">
-                {% comment %} {% csrf_token %} {% endcomment %}
                 {{ ticket_form.as_p }}
-            {% comment %} </form> {% endcomment %}
         {% if form.errors %}
             {{ form.errors }}
         {% endif %}
         </div>
         <div id="review-creation-form">
-            {% comment %} <form method="post"> {% endcomment %}
                 {% csrf_token %}
-                {% comment %} <span>Titre de la review</span>
-                {{ review_form.headline }}
-                <br>
-                <br>
-                <span>Note</span>
-                <br>
-                {{ review_form.rating }}
-                <br>
-                <span>Commentaire</span>
-                {{ review_form.body }} {% endcomment %}
                 {{ review_form.as_p }}
                 <input type="submit" value="Envoyer">
                 <button type="button">
