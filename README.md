@@ -22,7 +22,6 @@ Also, the system allows you to create a review even if there are no ticket on yo
 
 This script needs Python installed and some packages detailled in requirements.txt.
 
-Clone the repo with your terminal 
 1. Clone the repo with your terminal
 
 ```
@@ -66,4 +65,4 @@ Clone the repo with your terminal
 
 ## How to contribute 
 
-This project is a MVP and specifications requests simple and minimal UI. Feel free to image a design and add style for it. It will be great to have some animation with JavaScript.
+This project is a MVP and specifications requests simple and minimal UI. Feel free to imagine a design and add CSS for it. It will be great to have some animations with JavaScript too. 
