@@ -4,11 +4,11 @@ This is my fourth Python project for Openclassrooms courses.
 
 In this scenario, I have joined a young startup named LITReview who has just completed his first fundraising.
 
-Our goal is to launch a product which can be use by our community. They can use it to consult or request book reviews on demand.
+Our goal is to launch a product which can be used by our community. They can use it to consult or request book reviews on demand.
 
-This application will be a web application,and it will be develop on django web framework.
+This application will be a web application,and it will be developed on django web framework.
 
-On the app, you can create your personnal account and use the following system to follow all the users that you want. 
+On the app, you can create your personal account and use the following system to follow all the users that you want. 
 
 You can request a book review or you can post review on users tickets if they are on your following list.
 
@@ -18,7 +18,7 @@ You can not create a review on a ticket if this ticket already received a review
 
 Also, the system allows you to create a review even if there are no ticket on your book.
 
-## Instalation
+## Installation
 
 This script needs Python installed and some packages detailled in requirements.txt.
 
