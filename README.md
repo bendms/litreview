@@ -1,5 +1,8 @@
 # LIT REVIEW
 
+![LITREVIEW](https://user-images.githubusercontent.com/97233634/203274248-6b4106ea-bf11-4576-96ea-6d27d9dc6672.png)
+
+
 This is my fourth Python project for Openclassrooms courses.
 
 In this scenario, I have joined a young startup named LITReview who has just completed his first fundraising.
